@@ -307,3 +307,4 @@ E:/DOT NET Projects/LibraryManagement/LibraryManagement/obj/Debug/net8.0/staticw
 /Users/rajatkumarburde/MainMac/Coding Projects/Backend/LibraryManagement/LibraryManagement/obj/Debug/net8.0/LibraryManagement.pdb
 /Users/rajatkumarburde/MainMac/Coding Projects/Backend/LibraryManagement/LibraryManagement/obj/Debug/net8.0/LibraryManagement.genruntimeconfig.cache
 /Users/rajatkumarburde/MainMac/Coding Projects/Backend/LibraryManagement/LibraryManagement/obj/Debug/net8.0/ref/LibraryManagement.dll
+/Users/rajatkumarburde/MainMac/Coding Projects/Backend/LibraryManagement/LibraryManagement/obj/Debug/net8.0/LibraryManagement.sourcelink.json
