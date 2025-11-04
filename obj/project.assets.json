@@ -5511,11 +5511,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/rajatkumarburde/MainMac/Coding Projects/Backend/LibraryManagementBackend/LibraryManagement.csproj",
+      "projectUniqueName": "/Users/rajatkumarburde/MainMac/Coding Projects/LibraryManagement/Backend/LibraryManagement.csproj",
       "projectName": "LibraryManagement",
-      "projectPath": "/Users/rajatkumarburde/MainMac/Coding Projects/Backend/LibraryManagementBackend/LibraryManagement.csproj",
+      "projectPath": "/Users/rajatkumarburde/MainMac/Coding Projects/LibraryManagement/Backend/LibraryManagement.csproj",
       "packagesPath": "/Users/rajatkumarburde/.nuget/packages/",
-      "outputPath": "/Users/rajatkumarburde/MainMac/Coding Projects/Backend/LibraryManagementBackend/obj/",
+      "outputPath": "/Users/rajatkumarburde/MainMac/Coding Projects/LibraryManagement/Backend/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/rajatkumarburde/.nuget/NuGet/NuGet.Config"

@@ -12,122 +12,124 @@ using System.Text;
 
 public class Program
 {
-public static void Main(string[] args)
-{
-var builder = WebApplication.CreateBuilder(args);
-
-    // Add Controllers
-    builder.Services.AddControllers();
-
-    // Get connection string from appsettings.json or environment variables
-    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
-    // ✅ Use PostgreSQL instead of MySQL
-    builder.Services.AddDbContext<FreedbLibraryManagementContext>(options =>
-        options.UseNpgsql(connectionString)
-    );
-
-    // Register services
-    builder.Services.AddScoped<IUserService, UserService>();
-    builder.Services.AddScoped<IAuthorService, AuthorService>();
-    builder.Services.AddScoped<IGenreService, GenreService>();
-    builder.Services.AddScoped<IBookService, BookService>();
-    builder.Services.AddScoped<IBorrowTransactionService, BorrowTransactionService>();
-
-    // JWT Authentication
-    var jwtKey = builder.Configuration["Jwt:Key"];
-    var key = Encoding.ASCII.GetBytes(jwtKey);
-
-    builder.Services.AddAuthentication(options =>
+    public static void Main(string[] args)
     {
-        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(key),
-            ValidateIssuer = false,
-            ValidateAudience = false
-        };
-    });
+        var builder = WebApplication.CreateBuilder(args);
 
-    builder.Services.AddAuthorization();
+        // Add Controllers
+        builder.Services.AddControllers();
 
-    // Correct CORS policy
-    builder.Services.AddCors(options =>
-    {
-        options.AddPolicy("AllowFrontend", policy =>
-        {
-            policy.WithOrigins("https://librarymanagementbyrajat.netlify.app")
-                  .AllowAnyHeader()
-                  .AllowAnyMethod()
-                  .AllowCredentials(); 
-        });
-    });
+        // Get connection string from appsettings.json or environment variables
+        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-    // Swagger with JWT support
-    builder.Services.AddEndpointsApiExplorer();
-    builder.Services.AddSwaggerGen(options =>
-    {
-        options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-        {
-            Name = "Authorization",
-            Type = SecuritySchemeType.ApiKey,
-            Scheme = "Bearer",
-            BearerFormat = "JWT",
-            In = ParameterLocation.Header,
-            Description = "Enter 'Bearer {your token}' to authenticate."
-        });
+        // ✅ Use PostgreSQL instead of MySQL
+        builder.Services.AddDbContext<FreedbLibraryManagementContext>(options =>
+            options.UseNpgsql(connectionString)
+        );
 
-        options.AddSecurityRequirement(new OpenApiSecurityRequirement
+        // Register services
+        builder.Services.AddScoped<IUserService, UserService>();
+        builder.Services.AddScoped<IAuthorService, AuthorService>();
+        builder.Services.AddScoped<IGenreService, GenreService>();
+        builder.Services.AddScoped<IBookService, BookService>();
+        builder.Services.AddScoped<IBorrowTransactionService, BorrowTransactionService>();
+
+        // JWT Authentication
+        var jwtKey = builder.Configuration["Jwt:Key"];
+        var key = Encoding.ASCII.GetBytes(jwtKey);
+
+        builder.Services.AddAuthentication(options =>
         {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
             {
-                new OpenApiSecurityScheme
-                {
-                    Reference = new OpenApiReference
-                    {
-                        Type = ReferenceType.SecurityScheme,
-                        Id = "Bearer"
-                    }
-                },
-                new string[] { }
-            }
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = false,
+                ValidateAudience = false
+            };
         });
-    });
 
-    // Add SignalR
-    builder.Services.AddSignalR();
+        builder.Services.AddAuthorization();
 
-    var app = builder.Build();
+        // Correct CORS policy
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("AllowFrontend", policy =>
+            {
+                policy.WithOrigins("https://librarymanagementbyrajat.netlify.app")
+                      .AllowAnyHeader()
+                      .AllowAnyMethod()
+                      .AllowCredentials();
+            });
+        });
 
-    // Use Swagger in Development
-    if (app.Environment.IsDevelopment())
-    {
+        // Swagger with JWT support
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen(options =>
+        {
+            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Name = "Authorization",
+                Type = SecuritySchemeType.ApiKey,
+                Scheme = "Bearer",
+                BearerFormat = "JWT",
+                In = ParameterLocation.Header,
+                Description = "Enter 'Bearer {your token}' to authenticate."
+            });
+
+            options.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    new string[] { }
+                }
+            });
+        });
+
+        // Add SignalR
+        builder.Services.AddSignalR();
+
+        var app = builder.Build();
+
+        // ✅ Enable Swagger in both Development and Production
         app.UseSwagger();
-        app.UseSwaggerUI();
-    }
+        app.UseSwaggerUI(c =>
+        {
+            c.SwaggerEndpoint("/swagger/v1/swagger.json", "Library Management API v1");
+            c.RoutePrefix = "swagger"; // keeps Swagger at /swagger
+        });
 
-    app.UseHttpsRedirection();
+        // ⚠️ HTTPS redirection can fail on Render, so it’s optional
+        // app.UseHttpsRedirection();
 
-    // Apply CORS **before** authentication and SignalR
-    app.UseCors("AllowFrontend");
+        // Apply CORS **before** authentication and SignalR
+        app.UseCors("AllowFrontend");
 
-    app.UseAuthentication();
-    app.UseAuthorization();
+        app.UseAuthentication();
+        app.UseAuthorization();
 
-    app.MapControllers();
+        app.MapControllers();
 
-    // Map SignalR hub
-    app.MapHub<NotificationHub>("/notificationHub");
+        // Map SignalR hub
+        app.MapHub<NotificationHub>("/notificationHub");
 
+        // Simple health check endpoint
         app.MapGet("/", async (FreedbLibraryManagementContext db) =>
         {
             try
             {
-                // Check database connection
                 var canConnect = await db.Database.CanConnectAsync();
                 if (canConnect)
                     return Results.Ok("✅ API is working fine and connected to PostgreSQL!");
@@ -140,17 +142,17 @@ var builder = WebApplication.CreateBuilder(args);
             }
         });
 
-    app.Run();
-}
-
-
+        // ✅ Render assigns a dynamic PORT env variable
+        var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+        app.Run($"http://0.0.0.0:{port}");
+    }
 }
 
 // SignalR Hub
 public class NotificationHub : Hub
 {
-public async Task SendMessage(string user, string message)
-{
-await Clients.All.SendAsync("ReceiveMessage", user, message);
-}
+    public async Task SendMessage(string user, string message)
+    {
+        await Clients.All.SendAsync("ReceiveMessage", user, message);
+    }
 }
