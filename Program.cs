@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.SignalR; // SignalR namespace
 using System.Text;
 
 public class Program
@@ -19,7 +19,7 @@ public class Program
         // Add Controllers
         builder.Services.AddControllers();
 
-        // Get connection string
+        // Get connection string from appsettings.json or environment variables
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
         // Add DbContext with MySQL
@@ -56,19 +56,19 @@ public class Program
 
         builder.Services.AddAuthorization();
 
-        // CORS
+        // Correct CORS policy
         builder.Services.AddCors(options =>
         {
             options.AddPolicy("AllowFrontend", policy =>
             {
-                policy.WithOrigins("https://librarymanagementbyrajat.netlify.app")
+                policy.WithOrigins("librarymanagementhero.netlify.app")
                       .AllowAnyHeader()
                       .AllowAnyMethod()
-                      .AllowCredentials();
+                      .AllowCredentials(); // Needed for SignalR
             });
         });
 
-        // Swagger
+        // Swagger with JWT support
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen(options =>
         {
@@ -98,6 +98,7 @@ public class Program
             });
         });
 
+        // Add SignalR
         builder.Services.AddSignalR();
 
         var app = builder.Build();
@@ -109,9 +110,9 @@ public class Program
             app.UseSwaggerUI();
         }
 
-        // ❌ Remove HTTPS redirection — Render already provides HTTPS
-        // app.UseHttpsRedirection();
+        app.UseHttpsRedirection();
 
+        // Apply CORS **before** authentication and SignalR
         app.UseCors("AllowFrontend");
 
         app.UseAuthentication();
@@ -119,20 +120,14 @@ public class Program
 
         app.MapControllers();
 
-        // Add a default root endpoint to test deployment
-        app.MapGet("/", () => Results.Ok("✅ Library Management Backend is running on Render!"));
-
         // Map SignalR hub
         app.MapHub<NotificationHub>("/notificationHub");
-
-        // ✅ Bind to Render's PORT environment variable
-        var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-        app.Urls.Add($"http://0.0.0.0:{port}");
 
         app.Run();
     }
 }
 
+// SignalR Hub
 public class NotificationHub : Hub
 {
     public async Task SendMessage(string user, string message)
