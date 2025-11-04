@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
-
-namespace LibraryManagement.Models;
-
+namespace LibraryManagement.Models
+{
 public partial class FreedbLibraryManagementContext : DbContext
 {
-    public FreedbLibraryManagementContext()
-    {
-    }
+public FreedbLibraryManagementContext()
+{
+}
+
 
     public FreedbLibraryManagementContext(DbContextOptions<FreedbLibraryManagementContext> options)
         : base(options)
@@ -17,189 +17,148 @@ public partial class FreedbLibraryManagementContext : DbContext
     }
 
     public virtual DbSet<Author> Authors { get; set; }
-
     public virtual DbSet<Book> Books { get; set; }
-
     public virtual DbSet<Borrowtransaction> Borrowtransactions { get; set; }
-
     public virtual DbSet<Genre> Genres { get; set; }
-
     public virtual DbSet<Refreshtoken> Refreshtokens { get; set; }
-
     public virtual DbSet<Review> Reviews { get; set; }
-
     public virtual DbSet<User> Users { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseMySql("server=sql.freedb.tech;port=3306;database=freedb_LibraryManagement;user=freedb_uxrajat;password=Uvx?Q5XChdGAf2M", Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.43-mysql"));
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+            // Read from configuration (Program.cs already passes connection string)
+            var connString = "Host=dpg-d41lfnbipnbc73fg69kg-a.oregon-postgres.render.com;Port=5432;Database=librarymanagementhero;Username=uxrajatdev;Password=PSUCmxdRu8n6lzTPQ5SkPt95JjF0mA0p;SSL Mode=Require;Trust Server Certificate=true;";
+            optionsBuilder.UseNpgsql(connString);
+        }
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder
-            .UseCollation("utf8mb4_0900_ai_ci")
-            .HasCharSet("utf8mb4");
-
         modelBuilder.Entity<Author>(entity =>
         {
-            entity.HasKey(e => e.AuthorId).HasName("PRIMARY");
-
-            entity
-                .ToTable("authors")
-                .HasCharSet("latin1")
-                .UseCollation("latin1_swedish_ci");
-
-            entity.Property(e => e.Bio).HasColumnType("text");
-            entity.Property(e => e.Name).HasMaxLength(10000);
+        entity.HasKey(e => e.AuthorId);
+        entity.ToTable("authors");
+    
+        entity.Property(e => e.AuthorId).HasColumnName("authorid");
+        entity.Property(e => e.Name).HasColumnName("name").HasMaxLength(10000);
+        entity.Property(e => e.Bio).HasColumnName("bio");
         });
+
 
         modelBuilder.Entity<Book>(entity =>
         {
-            entity.HasKey(e => e.BookId).HasName("PRIMARY");
+            entity.HasKey(e => e.BookId);
+            entity.ToTable("books");
 
-            entity
-                .ToTable("books")
-                .HasCharSet("latin1")
-                .UseCollation("latin1_swedish_ci");
+            entity.Property(e => e.BookId).HasColumnName("bookid");
+            entity.Property(e => e.Title).HasColumnName("title").HasMaxLength(200);
+            entity.Property(e => e.Isbn).HasColumnName("isbn").HasMaxLength(20);
+            entity.Property(e => e.Description).HasColumnName("description");
+            entity.Property(e => e.CoverImageUrl).HasColumnName("coverimageurl");
+            entity.Property(e => e.TotalCopies).HasColumnName("totalcopies").HasDefaultValue(1);
+            entity.Property(e => e.AvailableCopies).HasColumnName("availablecopies").HasDefaultValue(1);
+            entity.Property(e => e.AuthorId).HasColumnName("authorid");
+            entity.Property(e => e.GenreId).HasColumnName("genreid");
 
-            entity.HasIndex(e => e.AuthorId, "AuthorId");
-
-            entity.HasIndex(e => e.GenreId, "GenreId");
-
-            entity.HasIndex(e => e.Isbn, "ISBN").IsUnique();
-
-            entity.Property(e => e.AvailableCopies).HasDefaultValueSql("'1'");
-            entity.Property(e => e.CoverImageUrl).HasColumnType("text");
-            entity.Property(e => e.Description).HasColumnType("text");
-            entity.Property(e => e.Isbn)
-                .HasMaxLength(20)
-                .HasColumnName("ISBN");
-            entity.Property(e => e.Title).HasMaxLength(200);
-            entity.Property(e => e.TotalCopies).HasDefaultValueSql("'1'");
-
-            entity.HasOne(d => d.Author).WithMany(p => p.Books)
-                .HasForeignKey(d => d.AuthorId)
-                .HasConstraintName("books_ibfk_1");
-
-            entity.HasOne(d => d.Genre).WithMany(p => p.Books)
-                .HasForeignKey(d => d.GenreId)
-                .HasConstraintName("books_ibfk_2");
+            entity.HasOne(d => d.Author)
+                .WithMany(p => p.Books)
+                .HasForeignKey(d => d.AuthorId);
+        
+            entity.HasOne(d => d.Genre)
+                .WithMany(p => p.Books)
+                .HasForeignKey(d => d.GenreId);
         });
+
 
         modelBuilder.Entity<Borrowtransaction>(entity =>
         {
-            entity.HasKey(e => e.TransactionId).HasName("PRIMARY");
+            entity.HasKey(e => e.TransactionId);
+            entity.ToTable("borrowtransactions");
 
-            entity
-                .ToTable("borrowtransactions")
-                .HasCharSet("latin1")
-                .UseCollation("latin1_swedish_ci");
+            entity.Property(e => e.TransactionId).HasColumnName("transactionid");
+            entity.Property(e => e.BookId).HasColumnName("bookid");
+            entity.Property(e => e.UserId).HasColumnName("userid");
+            entity.Property(e => e.FineAmount).HasPrecision(10, 2).HasDefaultValue(0.00m);
 
-            entity.HasIndex(e => e.BookId, "BookId");
+            entity.Property(e => e.BorrowDate).HasColumnName("borrowdate"); // if exists
+            entity.Property(e => e.DueDate).HasColumnName("duedate");       // <-- add this mapping
+            entity.Property(e => e.ReturnDate).HasColumnName("returndate"); // if exists
 
-            entity.HasIndex(e => e.UserId, "UserId");
+            entity.HasOne(d => d.Book)
+                  .WithMany(p => p.Borrowtransactions)
+                  .HasForeignKey(d => d.BookId);
+
+            entity.HasOne(d => d.User)
+                  .WithMany(p => p.Borrowtransactions)
+                  .HasForeignKey(d => d.UserId);
 
             entity.Property(e => e.FineAmount)
-                .HasPrecision(10, 2)
-                .HasDefaultValueSql("'0.00'");
-
-            entity.HasOne(d => d.Book).WithMany(p => p.Borrowtransactions)
-                .HasForeignKey(d => d.BookId)
-                .HasConstraintName("borrowtransactions_ibfk_2");
-
-            entity.HasOne(d => d.User).WithMany(p => p.Borrowtransactions)
-                .HasForeignKey(d => d.UserId)
-                .HasConstraintName("borrowtransactions_ibfk_1");
+            .HasColumnName("fineamount")
+            .HasPrecision(10, 2)
+            .HasDefaultValue(0.00m);
+            
+            entity.Property(e => e.Status)
+          .HasColumnName("status");
         });
+
 
         modelBuilder.Entity<Genre>(entity =>
-        {
-            entity.HasKey(e => e.GenreId).HasName("PRIMARY");
+{
+    entity.HasKey(e => e.GenreId);
+    entity.ToTable("genres");
 
-            entity
-                .ToTable("genres")
-                .HasCharSet("latin1")
-                .UseCollation("latin1_swedish_ci");
+    entity.Property(e => e.GenreId).HasColumnName("genreid");
+    entity.Property(e => e.Name).HasColumnName("name").HasMaxLength(100);
+});
 
-            entity.HasIndex(e => e.Name, "Name").IsUnique();
-
-            entity.Property(e => e.Name).HasMaxLength(100);
-        });
 
         modelBuilder.Entity<Refreshtoken>(entity =>
         {
-            entity.HasKey(e => e.TokenId).HasName("PRIMARY");
+            entity.HasKey(e => e.TokenId);
+            entity.ToTable("refreshtokens");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+            entity.Property(e => e.IsRevoked).HasDefaultValue(false);
 
-            entity
-                .ToTable("refreshtokens")
-                .HasCharSet("latin1")
-                .UseCollation("latin1_swedish_ci");
-
-            entity.HasIndex(e => e.UserId, "UserId");
-
-            entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnType("datetime");
-            entity.Property(e => e.ExpiresAt).HasColumnType("datetime");
-            entity.Property(e => e.IsRevoked).HasDefaultValueSql("'0'");
-            entity.Property(e => e.Token).HasColumnType("text");
-
-            entity.HasOne(d => d.User).WithMany(p => p.Refreshtokens)
-                .HasForeignKey(d => d.UserId)
-                .HasConstraintName("refreshtokens_ibfk_1");
+            entity.HasOne(d => d.User)
+                .WithMany(p => p.Refreshtokens)
+                .HasForeignKey(d => d.UserId);
         });
 
         modelBuilder.Entity<Review>(entity =>
         {
-            entity.HasKey(e => e.ReviewId).HasName("PRIMARY");
+            entity.HasKey(e => e.ReviewId);
+            entity.ToTable("reviews");
+            entity.Property(e => e.ReviewDate).HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-            entity
-                .ToTable("reviews")
-                .HasCharSet("latin1")
-                .UseCollation("latin1_swedish_ci");
+            entity.HasOne(d => d.Book)
+                .WithMany(p => p.Reviews)
+                .HasForeignKey(d => d.BookId);
 
-            entity.HasIndex(e => e.BookId, "BookId");
-
-            entity.HasIndex(e => e.UserId, "UserId");
-
-            entity.Property(e => e.Comment).HasColumnType("text");
-            entity.Property(e => e.ReviewDate)
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnType("datetime");
-
-            entity.HasOne(d => d.Book).WithMany(p => p.Reviews)
-                .HasForeignKey(d => d.BookId)
-                .HasConstraintName("reviews_ibfk_2");
-
-            entity.HasOne(d => d.User).WithMany(p => p.Reviews)
-                .HasForeignKey(d => d.UserId)
-                .HasConstraintName("reviews_ibfk_1");
+            entity.HasOne(d => d.User)
+                .WithMany(p => p.Reviews)
+                .HasForeignKey(d => d.UserId);
         });
 
         modelBuilder.Entity<User>(entity =>
-        {
-            entity.HasKey(e => e.UserId).HasName("PRIMARY");
+{
+    entity.HasKey(e => e.UserId);
+    entity.ToTable("users");
 
-            entity
-                .ToTable("users")
-                .HasCharSet("latin1")
-                .UseCollation("latin1_swedish_ci");
-
-            entity.HasIndex(e => e.Email, "Email").IsUnique();
-
-            entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnType("datetime");
-            entity.Property(e => e.Email).HasMaxLength(100);
-            entity.Property(e => e.FullName).HasMaxLength(100);
-            entity.Property(e => e.PasswordHash).HasColumnType("text");
-            entity.Property(e => e.Role)
-                .HasDefaultValueSql("'user'")
-                .HasColumnType("enum('admin','user')");
-        });
+    entity.Property(e => e.UserId).HasColumnName("userid"); 
+    entity.Property(e => e.Email).HasColumnName("email").HasMaxLength(100);
+    entity.Property(e => e.FullName).HasColumnName("fullname").HasMaxLength(100);
+    entity.Property(e => e.Role).HasColumnName("role").HasDefaultValue("user");
+    entity.Property(e => e.CreatedAt).HasColumnName("createdat").HasDefaultValueSql("CURRENT_TIMESTAMP");
+    entity.Property(e => e.PasswordHash).HasColumnName("passwordhash");
+});
 
         OnModelCreatingPartial(modelBuilder);
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+}
+
+
 }

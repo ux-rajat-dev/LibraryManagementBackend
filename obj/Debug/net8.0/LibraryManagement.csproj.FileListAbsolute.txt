@@ -463,3 +463,5 @@ E:/DOT NET Projects/LibraryManagement/LibraryManagement/obj/Debug/net8.0/staticw
 /Users/rajatkumarburde/MainMac/Coding Projects/Backend/LibraryManagementBackend/obj/Debug/net8.0/LibraryManagement.pdb
 /Users/rajatkumarburde/MainMac/Coding Projects/Backend/LibraryManagementBackend/obj/Debug/net8.0/LibraryManagement.genruntimeconfig.cache
 /Users/rajatkumarburde/MainMac/Coding Projects/Backend/LibraryManagementBackend/obj/Debug/net8.0/ref/LibraryManagement.dll
+/Users/rajatkumarburde/MainMac/Coding Projects/Backend/LibraryManagementBackend/bin/Debug/net8.0/Npgsql.dll
+/Users/rajatkumarburde/MainMac/Coding Projects/Backend/LibraryManagementBackend/bin/Debug/net8.0/Npgsql.EntityFrameworkCore.PostgreSQL.dll
