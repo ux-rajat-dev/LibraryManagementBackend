@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.SignalR; // SignalR namespace
 using System.Text;
 
 public class Program
@@ -61,7 +61,8 @@ public class Program
         {
             options.AddPolicy("AllowFrontend", policy =>
             {
-                policy.WithOrigins("https://librarymanagementbyrajat.netlify.app/")
+
+                policy.WithOrigins("https://librarymanagementbyrajat.netlify.app")
                       .AllowAnyHeader()
                       .AllowAnyMethod()
                       .AllowCredentials(); // Needed for SignalR
