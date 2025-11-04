@@ -61,7 +61,7 @@ public class Program
         {
             options.AddPolicy("AllowFrontend", policy =>
             {
-                policy.WithOrigins("librarymanagementhero.netlify.app")
+                policy.WithOrigins("https://librarymanagementbyrajat.netlify.app")
                       .AllowAnyHeader()
                       .AllowAnyMethod()
                       .AllowCredentials(); // Needed for SignalR
