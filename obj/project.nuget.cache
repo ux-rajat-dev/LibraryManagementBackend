@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Rh25GOyuPoo=",
+  "dgSpecHash": "/e+bV7PWRf8=",
   "success": true,
-  "projectFilePath": "/Users/rajatkumarburde/MainMac/Coding Projects/Backend/LibraryManagement/LibraryManagement/LibraryManagement.csproj",
+  "projectFilePath": "/Users/rajatkumarburde/MainMac/Coding Projects/Backend/LibraryManagementBackend/LibraryManagement.csproj",
   "expectedPackageFiles": [
     "/Users/rajatkumarburde/.nuget/packages/azure.core/1.25.0/azure.core.1.25.0.nupkg.sha512",
     "/Users/rajatkumarburde/.nuget/packages/azure.identity/1.7.0/azure.identity.1.7.0.nupkg.sha512",

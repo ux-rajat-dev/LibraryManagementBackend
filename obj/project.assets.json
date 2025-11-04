@@ -5437,11 +5437,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/rajatkumarburde/MainMac/Coding Projects/Backend/LibraryManagement/LibraryManagement/LibraryManagement.csproj",
+      "projectUniqueName": "/Users/rajatkumarburde/MainMac/Coding Projects/Backend/LibraryManagementBackend/LibraryManagement.csproj",
       "projectName": "LibraryManagement",
-      "projectPath": "/Users/rajatkumarburde/MainMac/Coding Projects/Backend/LibraryManagement/LibraryManagement/LibraryManagement.csproj",
+      "projectPath": "/Users/rajatkumarburde/MainMac/Coding Projects/Backend/LibraryManagementBackend/LibraryManagement.csproj",
       "packagesPath": "/Users/rajatkumarburde/.nuget/packages/",
-      "outputPath": "/Users/rajatkumarburde/MainMac/Coding Projects/Backend/LibraryManagement/LibraryManagement/obj/",
+      "outputPath": "/Users/rajatkumarburde/MainMac/Coding Projects/Backend/LibraryManagementBackend/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/rajatkumarburde/.nuget/NuGet/NuGet.Config"
