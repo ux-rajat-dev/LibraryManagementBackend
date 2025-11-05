@@ -62,8 +62,7 @@ public class Program
             options.AddPolicy("AllowFrontend", policy =>
             {
                 policy.WithOrigins(
-        "https://librarymanagementbyrajat.netlify.app",
-        "http://localhost:5173"
+        "https://librarymanagementbyrajat.netlify.app"
     )
                       .AllowAnyHeader()
                       .AllowAnyMethod()
