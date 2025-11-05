@@ -61,7 +61,10 @@ public class Program
         {
             options.AddPolicy("AllowFrontend", policy =>
             {
-                policy.WithOrigins("https://librarymanagementbyrajat.netlify.app")
+                policy.WithOrigins(
+        "https://librarymanagementbyrajat.netlify.app",
+        "http://localhost:5173"
+    )
                       .AllowAnyHeader()
                       .AllowAnyMethod()
                       .AllowCredentials();
@@ -108,7 +111,7 @@ public class Program
         app.UseSwaggerUI(c =>
         {
             c.SwaggerEndpoint("/swagger/v1/swagger.json", "Library Management API v1");
-            c.RoutePrefix = "swagger"; // keeps Swagger at /swagger
+            c.RoutePrefix = "swagger"; 
         });
 
         // ⚠️ HTTPS redirection can fail on Render, so it’s optional
