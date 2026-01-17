@@ -24,15 +24,15 @@ public FreedbLibraryManagementContext()
     public virtual DbSet<Review> Reviews { get; set; }
     public virtual DbSet<User> Users { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+   protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+{
+    if (!optionsBuilder.IsConfigured)
     {
-        if (!optionsBuilder.IsConfigured)
-        {
-            // Read from configuration (Program.cs already passes connection string)
-            var connString = "Host=dpg-d41lfnbipnbc73fg69kg-a.oregon-postgres.render.com;Port=5432;Database=librarymanagementhero;Username=uxrajatdev;Password=PSUCmxdRu8n6lzTPQ5SkPt95JjF0mA0p;SSL Mode=Require;Trust Server Certificate=true;";
-            optionsBuilder.UseNpgsql(connString);
-        }
+        var connString = "server=192.168.29.53;port=3306;database=library_management_db;user=lmsuser;password=Lms@12345;charset=utf8mb4;";
+        optionsBuilder.UseMySql(connString, ServerVersion.AutoDetect(connString));
     }
+}
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

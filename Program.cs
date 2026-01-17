@@ -22,10 +22,13 @@ public class Program
         // Get connection string from appsettings.json or environment variables
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-        // ✅ Use PostgreSQL instead of MySQL
         builder.Services.AddDbContext<FreedbLibraryManagementContext>(options =>
-            options.UseNpgsql(connectionString)
-        );
+    options.UseMySql(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
+    )
+);
+
 
         // Register services
         builder.Services.AddScoped<IUserService, UserService>();
@@ -58,17 +61,17 @@ public class Program
 
         // Correct CORS policy
         builder.Services.AddCors(options =>
-        {
-            options.AddPolicy("AllowFrontend", policy =>
-            {
-                policy.WithOrigins(
-        "https://librarymanagementbyrajat.netlify.app"
-    )
-                      .AllowAnyHeader()
-                      .AllowAnyMethod()
-                      .AllowCredentials();
-            });
-        });
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy
+            .AllowAnyOrigin()   // Allow all origins
+            .AllowAnyHeader()   // Allow all headers
+            .AllowAnyMethod();  // Allow GET, POST, PUT, DELETE, etc.
+            // .AllowCredentials(); <-- remove this if you use AllowAnyOrigin
+    });
+});
+
 
         // Swagger with JWT support
         builder.Services.AddEndpointsApiExplorer();
